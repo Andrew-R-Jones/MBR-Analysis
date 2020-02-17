@@ -114,6 +114,7 @@ partitions_types_dict = {
     "ff": "BBT"
 }
 
+
 def process_data_file():
     file = sys.argv[1]
 
@@ -132,19 +133,20 @@ def process_data_file():
             boot_rcd_sig.append(f.read(1).hex())
 
 # returns the file name, without the path or extension
+
+
 def extract_name_from_path(f):
     fileName = os.path.basename(f)
     name_only = fileName.split('.')[0]
     return name_only
 
 # generates sha1 and md5 checksums of raw image file
+
+
 def generate_hashes():
 
     file_name = os.path.basename(sys.argv[1]).split('.')[0]
-    file_extension = os.path.basename(sys.argv[1]).split('.')[1]
 
-    entire_file_name = f"{file_name}.{file_extension}"
-    
     BUF_SIZE = 65536
 
     md5 = hashlib.md5()
@@ -161,11 +163,11 @@ def generate_hashes():
     #print("MD5: {0}".format(md5.hexdigest()))
     #print("sha1: {0}".format(sha1.hexdigest()))
 
-    f = open(f"SHA1-{entire_file_name}.txt", "w")
+    f = open(f"SHA1-{file_name}.txt", "w")
     f.write(sha1.hexdigest())
     f.close()
 
-    f = open(f"MD5-{entire_file_name}.txt", "w")
+    f = open(f"MD5-{file_name}.txt", "w")
     f.write(md5.hexdigest())
     f.close()
 
@@ -174,7 +176,7 @@ def get_last_8_bytes(end_address):
     file = sys.argv[1]
     l = []
     with open(file, "rb") as f:
-       
+
             for i in range(end_address - 8):
                 f.read(1)
             for i in range(8):
@@ -182,7 +184,6 @@ def get_last_8_bytes(end_address):
 
     return l
 
-    
 
 def extract_partition_data(part_list):
 
@@ -191,8 +192,10 @@ def extract_partition_data(part_list):
 
     flag = part_list[0]
     part_type = part_list[4]
+    # calculate starting sector
     for i in range(11, 7, -1):
         start_sector = start_sector + part_list[i]
+    # calculate partition size, in sectors
     for i in range(15, 11, -1):
         part_size = part_size + part_list[i]
 
@@ -200,25 +203,21 @@ def extract_partition_data(part_list):
     part_size_decimal = int(part_size, 16)
 
     start_address = start_sector_decimal * 512
-    #print(f"start sector decimal {start_sector_decimal}")
-    #print(f"start sector hex {start_sector}")
-
-    end_address = part_size_decimal * 512 + start_address
-    last8 = get_last_8_bytes(end_address)
-    
-    #print(f"Size of partition: {part_size_decimal}")
     #print(f"start addr: {start_address}")
+    #end_address = part_size_decimal * 512 + start_address
     #print(f"end addr: {end_address}")
-    
+    end_address = start_address + 512
+    last8 = get_last_8_bytes(end_address)
 
-    return [flag, part_type, str(start_sector_decimal).zfill(10), str(part_size_decimal).zfill(10), last8, part_type!='00']
+    return [flag, part_type, str(start_sector_decimal).zfill(10), str(part_size_decimal).zfill(10), last8, part_type != '00']
+
 
 def print_partition_data(l):
     if l[5]:
         print(f"({l[1]}) {partitions_types_dict.get(l[1])}, {l[2]}, {l[3]}")
 
 
-def print_last_8_bytes(part_number,l, active):
+def print_last_8_bytes(part_number, l, active):
     if active:
         print(f"Partition number: {part_number}")
         print("Last 8 bytes of boot record: ", end="")
