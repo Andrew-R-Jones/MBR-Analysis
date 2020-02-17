@@ -200,12 +200,16 @@ def extract_partition_data(part_list):
     part_size_decimal = int(part_size, 16)
 
     start_address = start_sector_decimal * 512
+    #print(f"start sector decimal {start_sector_decimal}")
+    #print(f"start sector hex {start_sector}")
+
     end_address = part_size_decimal * 512 + start_address
     last8 = get_last_8_bytes(end_address)
-    '''
-    print(f"start addr: {start_address}")
-    print(f"end addr: {end_address}")
-    '''
+    
+    #print(f"Size of partition: {part_size_decimal}")
+    #print(f"start addr: {start_address}")
+    #print(f"end addr: {end_address}")
+    
 
     return [flag, part_type, str(start_sector_decimal).zfill(10), str(part_size_decimal).zfill(10), last8, part_type!='00']
 
