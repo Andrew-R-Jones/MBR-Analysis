@@ -146,6 +146,9 @@ def extract_name_from_path(f):
 def generate_hashes():
 
     file_name = os.path.basename(sys.argv[1]).split('.')[0]
+    file_extension = os.path.basename(sys.argv[1]).split('.')[1]
+    entire_file_name = f"{file_name}.{file_extension}"
+
 
     BUF_SIZE = 65536
 
@@ -163,11 +166,11 @@ def generate_hashes():
     #print("MD5: {0}".format(md5.hexdigest()))
     #print("sha1: {0}".format(sha1.hexdigest()))
 
-    f = open(f"SHA1-{file_name}.txt", "w")
+    f = open(f"SHA1-{entire_file_name}.txt", "w")
     f.write(sha1.hexdigest())
     f.close()
 
-    f = open(f"MD5-{file_name}.txt", "w")
+    f = open(f"MD5-{entire_file_name}.txt", "w")
     f.write(md5.hexdigest())
     f.close()
 
